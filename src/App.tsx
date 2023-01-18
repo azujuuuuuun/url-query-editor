@@ -1,34 +1,136 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import React, { useEffect, useRef, useState } from "react";
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const tabId = useRef<number>();
+  const initialUrl = useRef<URL>();
+  const [queryParams, setQueryParams] = useState<
+    { key: string; value: string }[]
+  >([]);
+
+  const isSendDisabled =
+    queryParams.filter((p) => p.key && p.value).length === 0;
+
+  const onChangeQueryKey = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    setQueryParams((prev) =>
+      prev.map((param, i) => {
+        if (i === index) {
+          return { key: e.target.value, value: param.value };
+        }
+        return param;
+      })
+    );
+  };
+
+  const onChangeQueryValue = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    setQueryParams((prev) =>
+      prev.map((param, i) => {
+        if (i === index) {
+          return { key: param.key, value: e.target.value };
+        }
+        return param;
+      })
+    );
+  };
+
+  const onClickDelete = (index: number) => {
+    setQueryParams((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const onClickAdd = () => {
+    setQueryParams((prev) => prev.concat([{ key: "", value: "" }]));
+  };
+
+  const onClickSend = async () => {
+    if (!tabId.current || !initialUrl.current) {
+      return;
+    }
+
+    const newSearch =
+      "?" + queryParams.map((p) => `${p.key}=${p.value}`).join("&");
+    const newUrl = initialUrl.current.href.replace(
+      initialUrl.current.search,
+      newSearch
+    );
+
+    await chrome?.scripting?.executeScript({
+      target: {
+        tabId: tabId.current,
+      },
+      // @ts-ignore
+      func: (url: string) => {
+        window.location.href = url;
+      },
+      args: [newUrl],
+    });
+
+    window.close();
+  };
+
+  useEffect(() => {
+    chrome?.tabs?.query({ active: true }).then((tabs) => {
+      const [tab] = tabs;
+
+      if (!tab.id || !tab.url) {
+        return;
+      }
+
+      const url = new URL(tab.url);
+      const params: { key: string; value: string }[] = [];
+      url.searchParams.forEach((value, key) => {
+        params.push({ key, value });
+      });
+
+      tabId.current = tab.id;
+      initialUrl.current = url;
+      setQueryParams(params);
+    });
+  }, []);
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      {queryParams.length > 0 && (
+        <ul>
+          {queryParams.map((p, i) => (
+            <li key={i} className="list-item">
+              <input
+                className="input"
+                value={p.key}
+                onChange={(e) => onChangeQueryKey(e, i)}
+              />
+              <span>=</span>
+              <input
+                className="input"
+                value={p.value}
+                onChange={(e) => onChangeQueryValue(e, i)}
+              />
+              <button className="button" onClick={() => onClickDelete(i)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="button-group">
+        <button className="button" onClick={onClickAdd}>
+          Add
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <button
+          className="button"
+          disabled={isSendDisabled}
+          onClick={onClickSend}
+        >
+          Send
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

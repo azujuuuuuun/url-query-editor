@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "URL query editor",
+  "version": "0.0.0",
+  "action": {
+    "default_popup": "dist/index.html"
+  },
+  "description": "URL query editor",
+  "permissions": ["activeTab", "scripting"]
+}
