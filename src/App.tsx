@@ -52,7 +52,7 @@ function App() {
     const { hash, href, search } = initialUrl.current;
     const newSearchParams = new URLSearchParams(
       queryParams
-        .filter((p) => p.key)
+        .filter((p) => p.key.trim())
         .reduce((prev, cur) => ({ ...prev, [cur.key]: cur.value }), {})
     );
     const newSearch = newSearchParams.toString() ? `?${newSearchParams}` : "";
