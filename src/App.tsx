@@ -8,9 +8,6 @@ function App() {
     { key: string; value: string }[]
   >([]);
 
-  const isSendDisabled =
-    queryParams.filter((p) => p.key && p.value).length === 0;
-
   const onChangeQueryKey = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -121,11 +118,7 @@ function App() {
         <button className="button" onClick={onClickAdd}>
           Add
         </button>
-        <button
-          className="button"
-          disabled={isSendDisabled}
-          onClick={onClickSend}
-        >
+        <button className="button" onClick={onClickSend}>
           Send
         </button>
       </div>
