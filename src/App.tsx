@@ -45,7 +45,7 @@ function App() {
   };
 
   const onClickSend = async () => {
-    if (!tabId.current || !initialUrl.current) {
+    if (!initialUrl.current) {
       return;
     }
 
@@ -59,38 +59,61 @@ function App() {
     const newUrl =
       href.replace(search, "").replace(hash, "") + newSearch + hash;
 
-    await chrome?.scripting?.executeScript({
-      target: {
-        tabId: tabId.current,
-      },
-      // @ts-ignore
-      func: (url: string) => {
-        window.location.href = url;
-      },
-      args: [newUrl],
-    });
-
-    window.close();
-  };
-
-  useEffect(() => {
-    chrome?.tabs?.query({ active: true, currentWindow: true }).then((tabs) => {
-      const [tab] = tabs;
-
-      if (!tab.id || !tab.url) {
+    if (import.meta.env.MODE === "production") {
+      if (!tabId.current) {
         return;
       }
 
-      const url = new URL(tab.url);
-      const params: { key: string; value: string }[] = [];
-      url.searchParams.forEach((value, key) => {
-        params.push({ key, value });
+      await chrome?.scripting?.executeScript({
+        target: {
+          tabId: tabId.current,
+        },
+        // @ts-ignore
+        func: (url: string) => {
+          window.location.href = url;
+        },
+        args: [newUrl],
       });
 
-      tabId.current = tab.id;
+      window.close();
+    } else {
+      window.location.href = newUrl;
+    }
+  };
+
+  const createQueryParams = (url: URL) => {
+    const params: { key: string; value: string }[] = [];
+    url.searchParams.forEach((value, key) => {
+      params.push({ key, value });
+    });
+    return params;
+  };
+
+  useEffect(() => {
+    if (import.meta.env.MODE == "production") {
+      chrome?.tabs
+        ?.query({ active: true, currentWindow: true })
+        .then((tabs) => {
+          const [tab] = tabs;
+
+          if (!tab.id || !tab.url) {
+            return;
+          }
+
+          const url = new URL(tab.url);
+          const params = createQueryParams(url);
+
+          tabId.current = tab.id;
+          initialUrl.current = url;
+          setQueryParams(params);
+        });
+    } else {
+      const url = new URL(window.location.href);
+      const params = createQueryParams(url);
+
       initialUrl.current = url;
       setQueryParams(params);
-    });
+    }
   }, []);
 
   return (
