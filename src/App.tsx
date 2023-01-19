@@ -83,6 +83,7 @@ function App() {
 
   const createQueryParams = (url: URL) => {
     const params: { key: string; value: string }[] = [];
+    url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
       params.push({ key, value });
     });
