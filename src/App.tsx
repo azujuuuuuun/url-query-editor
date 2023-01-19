@@ -59,7 +59,7 @@ function App() {
     const newUrl =
       href.replace(search, "").replace(hash, "") + newSearch + hash;
 
-    if (import.meta.env.MODE === "production") {
+    if (import.meta.env.MODE === "extension") {
       if (!tabId.current) {
         return;
       }
@@ -91,7 +91,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (import.meta.env.MODE == "production") {
+    if (import.meta.env.MODE == "extension") {
       chrome?.tabs
         ?.query({ active: true, currentWindow: true })
         .then((tabs) => {
