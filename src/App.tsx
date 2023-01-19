@@ -74,7 +74,7 @@ function App() {
   };
 
   useEffect(() => {
-    chrome?.tabs?.query({ active: true }).then((tabs) => {
+    chrome?.tabs?.query({ active: true, currentWindow: true }).then((tabs) => {
       const [tab] = tabs;
 
       if (!tab.id || !tab.url) {
