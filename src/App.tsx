@@ -49,12 +49,15 @@ function App() {
       return;
     }
 
-    const newSearch =
-      "?" + queryParams.map((p) => `${p.key}=${p.value}`).join("&");
-    const newUrl = initialUrl.current.href.replace(
-      initialUrl.current.search,
-      newSearch
+    const { hash, href, search } = initialUrl.current;
+    const newSearchParams = new URLSearchParams(
+      queryParams
+        .filter((p) => p.key)
+        .reduce((prev, cur) => ({ ...prev, [cur.key]: cur.value }), {})
     );
+    const newSearch = newSearchParams.toString() ? `?${newSearchParams}` : "";
+    const newUrl =
+      href.replace(search, "").replace(hash, "") + newSearch + hash;
 
     await chrome?.scripting?.executeScript({
       target: {
