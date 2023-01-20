@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 
+interface QueryParam {
+  key: string;
+  value: string;
+}
+
 function App() {
   const tabId = useRef<number>();
   const initialUrl = useRef<URL>();
-  const [queryParams, setQueryParams] = useState<
-    { key: string; value: string }[]
-  >([]);
+  const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
 
   const onChangeQueryKey = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -82,7 +85,7 @@ function App() {
   };
 
   const createQueryParams = (url: URL) => {
-    const params: { key: string; value: string }[] = [];
+    const params: QueryParam[] = [];
     url.searchParams.sort();
     url.searchParams.forEach((value, key) => {
       params.push({ key, value });
