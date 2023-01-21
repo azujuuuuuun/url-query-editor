@@ -83,7 +83,7 @@ describe("useQueryParams", () => {
       );
 
       act(() => {
-        result.current.updateQueryParam(0, "key", "key");
+        result.current.updateQueryParam("1", "key", "key");
       });
 
       expect(result.current.queryParams).toEqual([
@@ -97,7 +97,7 @@ describe("useQueryParams", () => {
       );
 
       act(() => {
-        result.current.updateQueryParam(0, "value", "value");
+        result.current.updateQueryParam("1", "value", "value");
       });
 
       expect(result.current.queryParams).toEqual([
@@ -112,7 +112,7 @@ describe("useQueryParams", () => {
     );
 
     act(() => {
-      result.current.deleteQueryParam(0);
+      result.current.deleteQueryParam("1");
     });
 
     expect(result.current.queryParams).toEqual([]);

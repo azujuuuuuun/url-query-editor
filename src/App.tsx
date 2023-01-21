@@ -12,20 +12,20 @@ function App() {
 
   const onChangeQueryKey = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    id: string
   ) => {
-    updateQueryParam(index, "key", e.target.value);
+    updateQueryParam(id, "key", e.target.value);
   };
 
   const onChangeQueryValue = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    id: string
   ) => {
-    updateQueryParam(index, "value", e.target.value);
+    updateQueryParam(id, "value", e.target.value);
   };
 
-  const onClickDelete = (index: number) => {
-    deleteQueryParam(index);
+  const onClickDelete = (id: string) => {
+    deleteQueryParam(id);
   };
 
   const onClickAdd = () => {
@@ -47,19 +47,19 @@ function App() {
       {queryParams.length > 0 && (
         <ul>
           {queryParams.map((p, i) => (
-            <li key={i} className="list-item">
+            <li key={p.id} className="list-item">
               <input
                 className="input"
                 value={p.key}
-                onChange={(e) => onChangeQueryKey(e, i)}
+                onChange={(e) => onChangeQueryKey(e, p.id)}
               />
               <span>=</span>
               <input
                 className="input"
                 value={p.value}
-                onChange={(e) => onChangeQueryValue(e, i)}
+                onChange={(e) => onChangeQueryValue(e, p.id)}
               />
-              <button className="button" onClick={() => onClickDelete(i)}>
+              <button className="button" onClick={() => onClickDelete(p.id)}>
                 Delete
               </button>
             </li>

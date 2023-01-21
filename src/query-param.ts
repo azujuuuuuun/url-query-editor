@@ -21,13 +21,13 @@ export const useQueryParams = (url?: string) => {
   const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
 
   const updateQueryParam = (
-    index: number,
+    id: string,
     target: "key" | "value",
     value: string
   ) => {
     setQueryParams((prev) =>
-      prev.map((param, i) => {
-        if (i === index) {
+      prev.map((param) => {
+        if (param.id === id) {
           return { ...param, [target]: value };
         }
         return param;
@@ -35,8 +35,8 @@ export const useQueryParams = (url?: string) => {
     );
   };
 
-  const deleteQueryParam = (index: number) => {
-    setQueryParams((prev) => prev.filter((_, i) => i !== index));
+  const deleteQueryParam = (id: string) => {
+    setQueryParams((prev) => prev.filter((param) => param.id !== id));
   };
 
   const addQueryParam = () => {
