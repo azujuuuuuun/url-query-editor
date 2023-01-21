@@ -30,6 +30,11 @@ function App() {
 
   const onClickAdd = () => {
     addQueryParam();
+
+    window.requestAnimationFrame(() => {
+      const elements = document.getElementsByName("query-key");
+      elements.item(elements.length - 1)?.focus();
+    });
   };
 
   const onClickSend = async () => {
@@ -57,6 +62,7 @@ function App() {
                 <input
                   id={keyId}
                   className="input"
+                  name="query-key"
                   value={p.key}
                   onChange={(e) => onChangeQueryKey(e, p.id)}
                 />
