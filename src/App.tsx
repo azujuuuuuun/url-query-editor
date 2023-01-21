@@ -46,7 +46,7 @@ function App() {
     <div className="App">
       {queryParams.length > 0 && (
         <ul>
-          {queryParams.map((p, i) => (
+          {queryParams.map((p) => (
             <li key={p.id} className="list-item">
               <input
                 className="input"
