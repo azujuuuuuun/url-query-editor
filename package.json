@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:extension": "tsc && vite build --mode extension",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run --reporter verbose"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -19,6 +20,7 @@
     "@vitejs/plugin-react-swc": "^3.0.0",
     "chrome-types": "0.1.163",
     "typescript": "^4.9.3",
-    "vite": "^4.0.0"
+    "vite": "^4.0.0",
+    "vitest": "0.27.2"
   }
 }
