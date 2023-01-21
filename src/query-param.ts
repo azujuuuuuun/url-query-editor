@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { uuid } from "./lib";
 
 interface QueryParam {
+  id: string;
   key: string;
   value: string;
 }
@@ -10,7 +12,7 @@ export const getQueryParams = (url: string) => {
   const params: QueryParam[] = [];
   urlObj.searchParams.sort();
   urlObj.searchParams.forEach((value, key) => {
-    params.push({ key, value });
+    params.push({ id: uuid(), key, value });
   });
   return params;
 };
@@ -38,7 +40,7 @@ export const useQueryParams = (url?: string) => {
   };
 
   const addQueryParam = () => {
-    setQueryParams((prev) => prev.concat([{ key: "", value: "" }]));
+    setQueryParams((prev) => prev.concat([{ id: uuid(), key: "", value: "" }]));
   };
 
   useEffect(() => {

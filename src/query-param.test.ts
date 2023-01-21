@@ -1,30 +1,64 @@
 /**
  * @vitest-environment jsdom
  */
+import { Mock, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { getQueryParams, useQueryParams, createNewUrl } from "./query-param";
+import { uuid } from "./lib";
+
+vi.mock("./lib", () => ({
+  uuid: vi.fn(),
+}));
 
 describe("getQueryParams", () => {
-  const testCases: [string, string, { key: string; value: string }[]][] = [
-    ["with no query param", "https://example.com", []],
-    ["with one param", "https://example.com?a=b", [{ key: "a", value: "b" }]],
+  beforeEach(() => {
+    (uuid as Mock).mockReturnValue("1");
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
+  const testCases: [
+    string,
+    string,
+    { id: string; key: string; value: string }[],
+    number
+  ][] = [
+    ["with no query param", "https://example.com", [], 0],
+    [
+      "with one param",
+      "https://example.com?a=b",
+      [{ id: "1", key: "a", value: "b" }],
+      1,
+    ],
     [
       "with unsorted key params",
       "https://example.com?b=a&a=b",
       [
-        { key: "a", value: "b" },
-        { key: "b", value: "a" },
+        { id: "1", key: "a", value: "b" },
+        { id: "1", key: "b", value: "a" },
       ],
+      2,
     ],
   ];
 
-  test.each(testCases)("%s", (name, url, expected) => {
+  test.each(testCases)("%s", (name, url, expected, times) => {
     expect(getQueryParams(url)).toEqual(expected);
+    expect(uuid).toHaveBeenCalledTimes(times);
   });
 });
 
 describe("useQueryParams", () => {
+  beforeEach(() => {
+    (uuid as Mock).mockReturnValue("1");
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   test("state with no url", () => {
     const { result } = renderHook(() => useQueryParams());
 
@@ -36,7 +70,10 @@ describe("useQueryParams", () => {
       useQueryParams("https://example.com?a=b")
     );
 
-    expect(result.current.queryParams).toEqual([{ key: "a", value: "b" }]);
+    expect(result.current.queryParams).toEqual([
+      { id: "1", key: "a", value: "b" },
+    ]);
+    expect(uuid).toHaveBeenCalledTimes(1);
   });
 
   describe("updateQueryParam", () => {
@@ -49,7 +86,9 @@ describe("useQueryParams", () => {
         result.current.updateQueryParam(0, "key", "key");
       });
 
-      expect(result.current.queryParams).toEqual([{ key: "key", value: "b" }]);
+      expect(result.current.queryParams).toEqual([
+        { id: "1", key: "key", value: "b" },
+      ]);
     });
 
     test("update value", () => {
@@ -62,7 +101,7 @@ describe("useQueryParams", () => {
       });
 
       expect(result.current.queryParams).toEqual([
-        { key: "a", value: "value" },
+        { id: "1", key: "a", value: "value" },
       ]);
     });
   });
@@ -86,7 +125,10 @@ describe("useQueryParams", () => {
       result.current.addQueryParam();
     });
 
-    expect(result.current.queryParams).toEqual([{ key: "", value: "" }]);
+    expect(result.current.queryParams).toEqual([
+      { id: "1", key: "", value: "" },
+    ]);
+    expect(uuid).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -94,13 +136,13 @@ describe("createNewUrl", () => {
   const testCases: [
     string,
     string,
-    { key: string; value: string }[],
+    { id: string; key: string; value: string }[],
     string
   ][] = [
     [
       "with falsy key",
       "https://example.com?a=b",
-      [{ key: " ", value: "value" }],
+      [{ id: "1", key: " ", value: "value" }],
       "https://example.com/",
     ],
     [
@@ -114,8 +156,8 @@ describe("createNewUrl", () => {
       "with query params",
       "https://example.com",
       [
-        { key: "b", value: "a" },
-        { key: "a", value: "b" },
+        { id: "1", key: "b", value: "a" },
+        { id: "1", key: "a", value: "b" },
       ],
       "https://example.com/?b=a&a=b",
     ],
