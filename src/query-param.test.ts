@@ -1,4 +1,9 @@
-import { getQueryParams, createNewUrl } from "./query-param";
+/**
+ * @vitest-environment jsdom
+ */
+import { renderHook } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
+import { getQueryParams, useQueryParams, createNewUrl } from "./query-param";
 
 describe("getQueryParams", () => {
   const testCases: [string, string, { key: string; value: string }[]][] = [
@@ -16,6 +21,72 @@ describe("getQueryParams", () => {
 
   test.each(testCases)("%s", (name, url, expected) => {
     expect(getQueryParams(url)).toEqual(expected);
+  });
+});
+
+describe("useQueryParams", () => {
+  test("state with no url", () => {
+    const { result } = renderHook(() => useQueryParams());
+
+    expect(result.current.queryParams).toEqual([]);
+  });
+
+  test("state with url", () => {
+    const { result } = renderHook(() =>
+      useQueryParams("https://example.com?a=b")
+    );
+
+    expect(result.current.queryParams).toEqual([{ key: "a", value: "b" }]);
+  });
+
+  describe("updateQueryParam", () => {
+    test("update key", () => {
+      const { result } = renderHook(() =>
+        useQueryParams("https://example.com?a=b")
+      );
+
+      act(() => {
+        result.current.updateQueryParam(0, "key", "key");
+      });
+
+      expect(result.current.queryParams).toEqual([{ key: "key", value: "b" }]);
+    });
+
+    test("update value", () => {
+      const { result } = renderHook(() =>
+        useQueryParams("https://example.com?a=b")
+      );
+
+      act(() => {
+        result.current.updateQueryParam(0, "value", "value");
+      });
+
+      expect(result.current.queryParams).toEqual([
+        { key: "a", value: "value" },
+      ]);
+    });
+  });
+
+  test("deleteQueryParam", () => {
+    const { result } = renderHook(() =>
+      useQueryParams("https://example.com?a=b")
+    );
+
+    act(() => {
+      result.current.deleteQueryParam(0);
+    });
+
+    expect(result.current.queryParams).toEqual([]);
+  });
+
+  test("addQueryParam", () => {
+    const { result } = renderHook(() => useQueryParams());
+
+    act(() => {
+      result.current.addQueryParam();
+    });
+
+    expect(result.current.queryParams).toEqual([{ key: "", value: "" }]);
   });
 });
 
