@@ -1,124 +1,46 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
+import { useTab } from "./tab";
+import { useQueryParams, createNewUrl } from "./query-param";
+import { useRouter } from "./router";
 import "./App.css";
 
-interface QueryParam {
-  key: string;
-  value: string;
-}
-
 function App() {
-  const tabId = useRef<number>();
-  const initialUrl = useRef<URL>();
-  const [queryParams, setQueryParams] = useState<QueryParam[]>([]);
+  const { id: tabId, url } = useTab();
+  const { queryParams, updateQueryParam, deleteQueryParam, addQueryParam } =
+    useQueryParams(url);
+  const router = useRouter();
 
   const onChangeQueryKey = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    setQueryParams((prev) =>
-      prev.map((param, i) => {
-        if (i === index) {
-          return { key: e.target.value, value: param.value };
-        }
-        return param;
-      })
-    );
+    updateQueryParam(index, "key", e.target.value);
   };
 
   const onChangeQueryValue = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    setQueryParams((prev) =>
-      prev.map((param, i) => {
-        if (i === index) {
-          return { key: param.key, value: e.target.value };
-        }
-        return param;
-      })
-    );
+    updateQueryParam(index, "value", e.target.value);
   };
 
   const onClickDelete = (index: number) => {
-    setQueryParams((prev) => prev.filter((_, i) => i !== index));
+    deleteQueryParam(index);
   };
 
   const onClickAdd = () => {
-    setQueryParams((prev) => prev.concat([{ key: "", value: "" }]));
+    addQueryParam();
   };
 
   const onClickSend = async () => {
-    if (!initialUrl.current) {
+    if (!url) {
       return;
     }
 
-    const { hash, href, search } = initialUrl.current;
-    const newSearchParams = new URLSearchParams(
-      queryParams
-        .filter((p) => p.key.trim())
-        .reduce((prev, cur) => ({ ...prev, [cur.key]: cur.value }), {})
-    );
-    const newSearch = newSearchParams.toString() ? `?${newSearchParams}` : "";
-    const newUrl =
-      href.replace(search, "").replace(hash, "") + newSearch + hash;
+    const newUrl = createNewUrl(url, queryParams);
 
-    if (import.meta.env.MODE === "extension") {
-      if (!tabId.current) {
-        return;
-      }
-
-      await chrome?.scripting?.executeScript({
-        target: {
-          tabId: tabId.current,
-        },
-        // @ts-ignore
-        func: (url: string) => {
-          window.location.href = url;
-        },
-        args: [newUrl],
-      });
-
-      window.close();
-    } else {
-      window.location.href = newUrl;
-    }
+    await router.push(newUrl, tabId);
   };
-
-  const createQueryParams = (url: URL) => {
-    const params: QueryParam[] = [];
-    url.searchParams.sort();
-    url.searchParams.forEach((value, key) => {
-      params.push({ key, value });
-    });
-    return params;
-  };
-
-  useEffect(() => {
-    if (import.meta.env.MODE == "extension") {
-      chrome?.tabs
-        ?.query({ active: true, currentWindow: true })
-        .then((tabs) => {
-          const [tab] = tabs;
-
-          if (!tab.id || !tab.url) {
-            return;
-          }
-
-          const url = new URL(tab.url);
-          const params = createQueryParams(url);
-
-          tabId.current = tab.id;
-          initialUrl.current = url;
-          setQueryParams(params);
-        });
-    } else {
-      const url = new URL(window.location.href);
-      const params = createQueryParams(url);
-
-      initialUrl.current = url;
-      setQueryParams(params);
-    }
-  }, []);
 
   return (
     <div className="App">
