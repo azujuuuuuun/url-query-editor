@@ -46,24 +46,36 @@ function App() {
     <div className="App">
       {queryParams.length > 0 && (
         <ul>
-          {queryParams.map((p) => (
-            <li key={p.id} className="list-item">
-              <input
-                className="input"
-                value={p.key}
-                onChange={(e) => onChangeQueryKey(e, p.id)}
-              />
-              <span>=</span>
-              <input
-                className="input"
-                value={p.value}
-                onChange={(e) => onChangeQueryValue(e, p.id)}
-              />
-              <button className="button" onClick={() => onClickDelete(p.id)}>
-                Delete
-              </button>
-            </li>
-          ))}
+          {queryParams.map((p, i) => {
+            const keyId = `key-${p.id}`;
+            const valueId = `value-${p.id}`;
+            return (
+              <li key={p.id} className="list-item">
+                <label className="visually-hidden" htmlFor={keyId}>
+                  Key of {i + 1} row
+                </label>
+                <input
+                  id={keyId}
+                  className="input"
+                  value={p.key}
+                  onChange={(e) => onChangeQueryKey(e, p.id)}
+                />
+                <span>=</span>
+                <label className="visually-hidden" htmlFor={valueId}>
+                  Value of {i + 1} row
+                </label>
+                <input
+                  id={valueId}
+                  className="input"
+                  value={p.value}
+                  onChange={(e) => onChangeQueryValue(e, p.id)}
+                />
+                <button className="button" onClick={() => onClickDelete(p.id)}>
+                  Delete
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
       <div className="button-group">

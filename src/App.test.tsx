@@ -25,4 +25,31 @@ describe("App", () => {
 
     expect(screen.queryByRole("textbox")).toBeNull();
   });
+
+  test("update key and value", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+
+    expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
+      ""
+    );
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value
+    ).toBe("");
+
+    fireEvent.change(screen.getByLabelText("Key of 1 row"), {
+      target: { value: "key" },
+    });
+    fireEvent.change(screen.getByLabelText("Value of 1 row"), {
+      target: { value: "value" },
+    });
+
+    expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
+      "key"
+    );
+    expect(
+      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value
+    ).toBe("value");
+  });
 });
