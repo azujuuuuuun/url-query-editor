@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useTab } from "./tab";
 import { useQueryParams, createNewUrl } from "./query-param";
 import { useRouter } from "./router";
@@ -46,6 +46,39 @@ function App() {
 
     await router.push(newUrl, tabId);
   };
+
+  const addFuncRef = useRef<Function>();
+  useEffect(() => {
+    addFuncRef.current = onClickAdd;
+  }, [onClickAdd]);
+
+  const sendFuncRef = useRef<Function>();
+  useEffect(() => {
+    sendFuncRef.current = onClickSend;
+  }, [onClickSend]);
+
+  const rendered = useRef(false);
+  useEffect(() => {
+    if (!rendered.current) {
+      rendered.current = true;
+      return;
+    }
+
+    const onKeyDown = async (e: any) => {
+      if (e.key === "+" && e.target?.nodeName !== "INPUT") {
+        addFuncRef.current?.();
+      }
+      if (e.shiftKey && e.key === "Enter") {
+        await sendFuncRef.current?.();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.addEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   return (
     <div className="App">
