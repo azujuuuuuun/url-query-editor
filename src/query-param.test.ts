@@ -24,7 +24,7 @@ describe("getQueryParams", () => {
     string,
     string,
     { id: string; key: string; value: string }[],
-    number
+    number,
   ][] = [
     ["with no query param", "https://example.com", [], 0],
     [
@@ -67,7 +67,7 @@ describe("useQueryParams", () => {
 
   test("state with url", () => {
     const { result } = renderHook(() =>
-      useQueryParams("https://example.com?a=b")
+      useQueryParams("https://example.com?a=b"),
     );
 
     expect(result.current.queryParams).toEqual([
@@ -79,7 +79,7 @@ describe("useQueryParams", () => {
   describe("updateQueryParam", () => {
     test("update key", () => {
       const { result } = renderHook(() =>
-        useQueryParams("https://example.com?a=b")
+        useQueryParams("https://example.com?a=b"),
       );
 
       act(() => {
@@ -93,7 +93,7 @@ describe("useQueryParams", () => {
 
     test("update value", () => {
       const { result } = renderHook(() =>
-        useQueryParams("https://example.com?a=b")
+        useQueryParams("https://example.com?a=b"),
       );
 
       act(() => {
@@ -108,7 +108,7 @@ describe("useQueryParams", () => {
 
   test("deleteQueryParam", () => {
     const { result } = renderHook(() =>
-      useQueryParams("https://example.com?a=b")
+      useQueryParams("https://example.com?a=b"),
     );
 
     act(() => {
@@ -137,7 +137,7 @@ describe("createNewUrl", () => {
     string,
     string,
     { id: string; key: string; value: string }[],
-    string
+    string,
   ][] = [
     [
       "with falsy key",

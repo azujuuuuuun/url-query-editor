@@ -32,10 +32,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add" }));
 
     expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
-      ""
+      "",
     );
     expect(
-      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value
+      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value,
     ).toBe("");
 
     fireEvent.change(screen.getByLabelText("Key of 1 row"), {
@@ -46,10 +46,10 @@ describe("App", () => {
     });
 
     expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
-      "key"
+      "key",
     );
     expect(
-      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value
+      screen.getByLabelText<HTMLInputElement>("Value of 1 row").value,
     ).toBe("value");
   });
 });
