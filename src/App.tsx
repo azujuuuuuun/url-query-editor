@@ -239,7 +239,9 @@ function App() {
       return;
     }
 
-    const onKeyDown = async (e: any) => {
+    const onKeyDown = async (e: KeyboardEvent) => {
+      // FIXME: fix type error
+      // @ts-ignore
       if (e.key === "+" && e.target?.nodeName !== "INPUT") {
         addFuncRef.current?.();
       }
