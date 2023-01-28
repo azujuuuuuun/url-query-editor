@@ -9,7 +9,8 @@
     "build:extension": "tsc && vite build --mode extension",
     "preview": "vite preview",
     "test": "vitest run --reporter verbose",
-    "format": "rome format --write src"
+    "format": "rome format --write src",
+    "lint": "rome check --apply src"
   },
   "dependencies": {
     "react": "^18.2.0",
