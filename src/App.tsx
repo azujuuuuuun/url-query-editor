@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import { useTab } from "./tab";
-import { useQueryParams, createNewUrl } from "./query-param";
-import { useRouter } from "./router";
 import "./App.css";
+import { createNewUrl, useQueryParams } from "./query-param";
+import { useRouter } from "./router";
+import { useTab } from "./tab";
+import React, { useEffect, useRef } from "react";
 
 const selectors = {
   focusable: "input, button",
@@ -26,7 +26,7 @@ function App() {
 
   const focusPrev = () => {
     const focusableElements = document.querySelectorAll<HTMLElement>(
-      selectors.focusable
+      selectors.focusable,
     );
 
     let activeIndex = -1;
@@ -46,7 +46,7 @@ function App() {
 
   const focusNext = () => {
     const focusableElements = document.querySelectorAll<HTMLElement>(
-      selectors.focusable
+      selectors.focusable,
     );
 
     let activeIndex = -1;
@@ -64,14 +64,14 @@ function App() {
 
   const onChangeQueryKey = (
     e: React.ChangeEvent<HTMLInputElement>,
-    id: string
+    id: string,
   ) => {
     updateQueryParam(id, "key", e.target.value);
   };
 
   const onKeyDownQueryKey = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     if (!e.shiftKey) {
       return;
@@ -100,14 +100,14 @@ function App() {
 
   const onChangeQueryValue = (
     e: React.ChangeEvent<HTMLInputElement>,
-    id: string
+    id: string,
   ) => {
     updateQueryParam(id, "value", e.target.value);
   };
 
   const onKeyDownQueryValue = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     if (!e.shiftKey) {
       return;
@@ -140,7 +140,7 @@ function App() {
 
   const onKeyDownDelete = (
     e: React.KeyboardEvent<HTMLButtonElement>,
-    index: number
+    index: number,
   ) => {
     if (!e.shiftKey) {
       return;
@@ -239,7 +239,9 @@ function App() {
       return;
     }
 
-    const onKeyDown = async (e: any) => {
+    const onKeyDown = async (e: KeyboardEvent) => {
+      // FIXME: fix type error
+      // @ts-ignore
       if (e.key === "+" && e.target?.nodeName !== "INPUT") {
         addFuncRef.current?.();
       }

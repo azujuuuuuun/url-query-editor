@@ -23,7 +23,7 @@ export const useQueryParams = (url?: string) => {
   const updateQueryParam = (
     id: string,
     target: "key" | "value",
-    value: string
+    value: string,
   ) => {
     setQueryParams((prev) =>
       prev.map((param) => {
@@ -31,7 +31,7 @@ export const useQueryParams = (url?: string) => {
           return { ...param, [target]: value };
         }
         return param;
-      })
+      }),
     );
   };
 
@@ -64,7 +64,7 @@ export const createNewUrl = (url: string, queryParams: QueryParam[]) => {
   const urlSearchParams = new URLSearchParams(
     queryParams
       .filter((p) => p.key.trim())
-      .reduce((prev, cur) => ({ ...prev, [cur.key]: cur.value }), {})
+      .reduce((prev, cur) => ({ ...prev, [cur.key]: cur.value }), {}),
   );
   const search = urlSearchParams.toString()
     ? `?${urlSearchParams.toString()}`
