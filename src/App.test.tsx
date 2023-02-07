@@ -1,8 +1,9 @@
+import App from "./App";
 /**
  * @vitest-environment jsdom
  */
-import { render, screen, fireEvent } from "@testing-library/react";
-import App from "./App";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 describe("App", () => {
   test("renders buttons", () => {
@@ -12,24 +13,28 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Send" })).not.toBeNull();
   });
 
-  test("click add and delete button", () => {
+  test("click add and delete button", async () => {
+    const user = userEvent.setup();
+
     render(<App />);
 
     expect(screen.queryByRole("textbox")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    await user.click(screen.getByRole("button", { name: "Add" }));
 
     expect(screen.getAllByRole("textbox").length).toBe(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "Delete" }));
 
     expect(screen.queryByRole("textbox")).toBeNull();
   });
 
-  test("update key and value", () => {
+  test("update key and value", async () => {
+    const user = userEvent.setup();
+
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Add" }));
+    await user.click(screen.getByRole("button", { name: "Add" }));
 
     expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
       "",
@@ -38,12 +43,8 @@ describe("App", () => {
       screen.getByLabelText<HTMLInputElement>("Value of 1 row").value,
     ).toBe("");
 
-    fireEvent.change(screen.getByLabelText("Key of 1 row"), {
-      target: { value: "key" },
-    });
-    fireEvent.change(screen.getByLabelText("Value of 1 row"), {
-      target: { value: "value" },
-    });
+    await user.type(screen.getByLabelText("Key of 1 row"), "key");
+    await user.type(screen.getByLabelText("Value of 1 row"), "value");
 
     expect(screen.getByLabelText<HTMLInputElement>("Key of 1 row").value).toBe(
       "key",
